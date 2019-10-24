@@ -1,0 +1,1 @@
+describe `blog_article`;

@@ -4,11 +4,12 @@ import datetime
 import shutil
 import os
 import threading
-SRC_PATH = '/home/quan/Desktop/code'
+SRC_PATH = '/home/quan/code'
 
-EXCEPT_DIR = ['.vscode', 'go', '.git']
+EXCEPT_DIR = ['.vscode', 'go', '.git','target','__pycache__']
 
-EXCEPT_EXTENSION = []
+ONLY_DIR = ['python','rust','c']
+EXCEPT_EXTENSION = ['.exe','.out']
 EXCEPT_EXTENSION = tuple(EXCEPT_EXTENSION)
 
 
@@ -16,7 +17,12 @@ current_dir = os.path.split(__file__)[0]
 
 new_dir = os.path.join(current_dir, os.path.split(SRC_PATH)[1])
 
-
+def with_only_dir(start_dir =SRC_PATH ,only_dir = ONLY_DIR):
+    for files in os.listdir(start_dir):
+        abs_path = os.path.join(start_dir, files)
+        if os.path.split(abs_path)[1] in only_dir:
+            yield abs_path
+        
 def gen_legal_abs_path(dir_or_file_name: str, nodirs=EXCEPT_DIR, notypes=EXCEPT_EXTENSION):
     if os.path.exists(dir_or_file_name):
         if os.path.isfile(dir_or_file_name) and not dir_or_file_name.endswith(notypes):
@@ -26,12 +32,18 @@ def gen_legal_abs_path(dir_or_file_name: str, nodirs=EXCEPT_DIR, notypes=EXCEPT_
             for p in os.listdir(dir_or_file_name):
                 abs_dir = os.path.join(dir_or_file_name, p)
                 yield from gen_legal_abs_path(abs_dir)
-
+def h(start_dir = SRC_PATH):
+    only_dirs = with_only_dir(start_dir)
+    for only_dir in only_dirs:
+        yield from gen_legal_abs_path(only_dir)
 
 def copy(src=SRC_PATH, des=new_dir):
     if not os.path.exists(des):
         os.mkdir(des)
-    file_or_dirs = gen_legal_abs_path(src)
+    for path in with_only_dir(src):
+        if not os.path.exists(path):
+            os.mkdir(path)
+    file_or_dirs = h(SRC_PATH)
     src_len = len(src)
     for p in file_or_dirs:
         # new_p = os.path.join(des, p[src_len:]) # trans the src abs path to des abs path
@@ -79,7 +91,8 @@ def format_all_python_files_in_new_dir(des=new_dir):
 
 
 if __name__ == '__main__':
-    format_all_python_files_in_new_dir("/home/quan/code/code-archive/code-20191023")
-    
+    #format_all_python_files_in_new_dir("/home/quan/code/code-archive/code-20191023")
+    copy()
+    rename_dir()
 
 # I know this is buggy, I will improve it later

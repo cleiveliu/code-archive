@@ -106,3 +106,8 @@ venv.bak/
 *.exe
 *.class
 .git/
+
+
+/target
+**/*.rs.bk
+
