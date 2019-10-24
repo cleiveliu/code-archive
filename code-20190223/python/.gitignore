@@ -1,0 +1,8 @@
+__pycache__
+.idea
+.pytest_cache
+.vscode
+*.class
+*.py[cod]
+*$py.class
+*.exe
