@@ -96,3 +96,4 @@ if __name__ == '__main__':
     rename_dir()
 
 # I know this is buggy, I will improve it later
+# actually, better use os.walk
